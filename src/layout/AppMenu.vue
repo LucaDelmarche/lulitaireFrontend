@@ -2,17 +2,21 @@
 import { ref } from 'vue';
 
 import AppMenuItem from './AppMenuItem.vue';
-
+import { useUserStore } from '@/store/UserStore';
+const userStore = useUserStore();
 const model = ref([
     {
-        label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        label: userStore.currentUser ? 'Home': '',
+        items: userStore.currentUser ? [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }] : []
     },
     {
-        label: 'Séléction',
-        items: [
-            { label: 'Veuillez vous connecter pour continuer', icon: 'pi pi-fw pi-user', to: '/auth/login' },
-        ]
+        label: userStore.currentUser ? '': 'Connexion/Inscription',
+        items: userStore.currentUser ? []:[
+            { label: 'Se connecter', icon: 'pi pi-fw pi-user', to: '/auth/login' },
+            { label: 'Créer un compte', icon: 'pi pi-fw pi-user-plus', to: '/auth/register' }
+
+        ],
+
     }
 ]);
 </script>

@@ -36,7 +36,7 @@ const login = async() => {
 
                     <div>
                         <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
-                        <InputText id="email1" type="text" placeholder="Adressaaae mail" class="w-full md:w-[30rem] mb-8" v-model="email" />
+                        <InputText id="email1" type="text" placeholder="Adresse mail" class="w-full md:w-[30rem] mb-8" v-model="email" />
 
                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Mot de passe</label>
                         <Password id="password1" @keydown.enter="login" v-model="password" placeholder="Mot de passe" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>

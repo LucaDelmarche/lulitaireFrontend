@@ -37,4 +37,3 @@ app.mount('#app');
 import { useUserStore } from './store/userStore';
 const userStore = useUserStore();
 await userStore.fetchCurrentUser();
-console.log(userStore.currentUser)
