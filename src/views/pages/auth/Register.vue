@@ -4,7 +4,7 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import userService from '@/service/usersService';
+import userService from '@/service/UsersService';
 import {useUserStore} from '@/store/UserStore';
 const userStore = useUserStore();
 const router = useRouter();

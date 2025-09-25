@@ -34,6 +34,3 @@ app.use(ToastService);
 app.use(ConfirmationService);
 
 app.mount('#app');
-import { useUserStore } from './store/userStore';
-const userStore = useUserStore();
-await userStore.fetchCurrentUser();
