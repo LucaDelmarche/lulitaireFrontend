@@ -10,6 +10,8 @@ RUN npm install
 COPY . .
 
 # Build de l'application en mode production
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build
 
 # Étape 2 : image runtime
