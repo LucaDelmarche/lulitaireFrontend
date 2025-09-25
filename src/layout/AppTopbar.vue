@@ -11,7 +11,7 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                 <i class="pi pi-bars"></i>
             </button>
             <router-link to="/" class="layout-topbar-logo">
-                <img src="../assets/logo.png" alt="Lulitaire Logo" class="mr-2 max-w-36" />
+                <img src="../assets/title_logo.png" alt="Lulitaire Logo" class="max-w-48" />
             </router-link>
         </div>
 
