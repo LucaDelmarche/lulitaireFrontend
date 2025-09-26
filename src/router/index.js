@@ -12,6 +12,12 @@ const router = createRouter({
                     path: '/',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
+                },
+                {
+                    path: '/zones/:id',
+                    name: 'zone-detail',
+                    component: () => import('@/views/Zones/ZoneDetail.vue'),
+                    props: true  // permet de recevoir "id" en props dans le composant
                 }
             ]
         },

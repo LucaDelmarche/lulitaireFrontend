@@ -11,7 +11,6 @@ export const useUserStore = defineStore('user', {
             try {
                 const data = await userService.login(email, password);
                 this.currentUser = data;
-                console.log(data);
                 return data;
             } catch (error) {
                 this.currentUser = null;

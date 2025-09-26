@@ -8,8 +8,10 @@ const password = ref('');
 const toast = useToast();
 const router = useRouter();
 const userStore = useUserStore();
+
 const login = async() => {
     try {
+
         await userStore.login(email.value, password.value);
         toast.add({ severity: 'success', summary: 'Succès', detail: `Bienvenue ${userStore.currentUser.mail}`, life: 3000 });
         await router.push('/');
