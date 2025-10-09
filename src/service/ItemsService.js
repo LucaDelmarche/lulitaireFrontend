@@ -13,10 +13,11 @@ const itemsService = {
         } catch (error) {
             throw error;
         }},
-    createItem: async (itemData) => {
+    createItem: async (payload) => {
         try {
-            const response = await apiClient.post(`/items`, itemData);
-            return response.data; // newly created item info, etc.
+            console.log(payload)
+            const response = await apiClient.post(`/items`, payload);
+            return response.data;
         } catch (error) {
             throw error;
         }},

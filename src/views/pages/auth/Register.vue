@@ -18,8 +18,8 @@ const register = async() => {
     }
     try {
         await userService.register({mail:email.value, password:password.value});
-        await router.push('/');
         await userStore.login(email.value, password.value);
+        await router.push('/');
         toast.add({ severity: 'success', summary: 'Succès', detail: `Bienvenue ${email.value}`, life: 3000 });
     }
     catch (error) {
