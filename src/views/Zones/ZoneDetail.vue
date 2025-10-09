@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import itemsService from '@/service/ItemsService';
 import {formatDate} from '@/utils/functions';
 const items = ref([])
@@ -9,6 +9,7 @@ const page = ref(0)
 const totalItems = ref(null);
 const showDeleteDialog = ref(false)
 const itemToDeleteId = ref(null)
+const showEditDialog = ref(false)
 const newItem = ref({
     Name: '',
     Quantity: '',
@@ -16,6 +17,13 @@ const newItem = ref({
     ExpirationDate: '',
     Location: '',
     ZoneId: 0
+})
+const editItem = ref({
+    name: '',
+    quantity: '',
+    unit: '',
+    expirationDate: '',
+    location: ''
 })
 
 onMounted(async () => {
@@ -50,7 +58,8 @@ const deleteConfirmed = async () => {
 
 
 const edit = (item) => {
-    console.log('Edit item', item);
+    editItem.value = { ...item }
+    showEditDialog.value = true
 }
 const add = () => {
     showAddDialog.value = true;
@@ -70,6 +79,20 @@ const saveNewItem = async () => {
     const updatedItems = await itemsService.getItemsByZoneId(props.id);
     totalItems.value = parseInt(updatedItems.totalItems);
     items.value = updatedItems.items;
+}
+const saveEditItem = async () => {
+    const payload = {
+        name: editItem.value.name,
+        quantity: Number(editItem.value.quantity),
+        unit: editItem.value.unit,
+        expirationDate: formatDate(editItem.value.expirationDate),
+        location: editItem.value.location
+    }
+    await itemsService.editItem(editItem.value.id, payload)
+    showEditDialog.value = false
+    const updatedItems = await itemsService.getItemsByZoneId(props.id, page.value, rows.value)
+    items.value = updatedItems.items
+    totalItems.value = parseInt(updatedItems.totalItems)
 }
 const onPageChange = async (event) => {
     page.value = event.page + 1;
@@ -187,5 +210,42 @@ const deleteItem = async (id) => {
             <Button label="Supprimer" icon="pi pi-trash" @click="deleteConfirmed" class="p-button-danger" />
         </div>
     </Dialog>
-
+    <Dialog
+        v-model:visible="showEditDialog"
+        header="Modifier l'article"
+        :modal="true"
+        :closable="false"
+        class="p-fluid p-dialog-sm"
+    >
+        <form @submit.prevent="saveEditItem">
+            <div class="p-fluid">
+                <div class="p-grid p-formgrid p-mb-3">
+                    <div class="p-field p-col-12 p-md-6 flex flex-col mb-4">
+                        <label for="edit-name">Nom</label>
+                        <InputText id="edit-name" v-model="editItem.name" required class="w-full" />
+                    </div>
+                    <div class="p-field p-col-12 p-md-6 flex flex-col mb-4">
+                        <label for="edit-quantity">Quantité</label>
+                        <InputNumber id="edit-quantity" v-model="editItem.quantity" :min="0" required class="w-full" />
+                    </div>
+                    <div class="p-field p-col-12 p-md-6 flex flex-col mb-4">
+                        <label for="edit-unit">Unité</label>
+                        <InputText id="edit-unit" v-model="editItem.unit" required class="w-full" />
+                    </div>
+                    <div class="p-field p-col-12 p-md-6 flex flex-col mb-4">
+                        <label for="edit-expirationDate">Date d'expiration</label>
+                        <Calendar id="edit-expirationDate" v-model="editItem.expirationDate" dateFormat="dd/mm/yy" showIcon required class="w-full" />
+                    </div>
+                    <div class="p-field p-col-12 flex flex-col mb-4">
+                        <label for="edit-location">Rayon</label>
+                        <InputText id="edit-location" v-model="editItem.location" required class="w-full" />
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-between">
+                <Button label="Annuler" icon="pi pi-times" @click="showEditDialog = false" class="p-button-text" />
+                <Button label="Enregistrer" icon="pi pi-check" type="submit" class="p-button-success" />
+            </div>
+        </form>
+    </Dialog>
 </template>

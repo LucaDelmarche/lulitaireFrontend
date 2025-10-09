@@ -21,9 +21,10 @@ const itemsService = {
         } catch (error) {
             throw error;
         }},
-    editItem: async (data) => {
+    editItem: async (id,data) => {
         try {
-            await apiClient.patch(`/items/${data.id}`, {name:data.name, description:data.description});
+            console.log(data)
+            await apiClient.patch(`/items/${id}`, data);
         }
         catch (error) {
             throw error;
