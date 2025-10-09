@@ -4,29 +4,50 @@ import itemsService from '@/service/ItemsService';
 import {formatDate} from '@/utils/functions';
 const items = ref([])
 const showAddDialog = ref(false)
-const rows = ref(10)
+const rows = ref(5)
 const page = ref(0)
 const totalItems = ref(null);
+const showDeleteDialog = ref(false)
+const itemToDeleteId = ref(null)
 const newItem = ref({
-  Name: '',
-  Quantity: '',
-  Unit: '',
-  ExpirationDate: '',
-  Location: '',
-  ZoneId: 0
+    Name: '',
+    Quantity: '',
+    Unit: '',
+    ExpirationDate: '',
+    Location: '',
+    ZoneId: 0
 })
 
+onMounted(async () => {
+    const response = await itemsService.getItemsByZoneId(props.id,1,10);
+    totalItems.value = parseInt(response.totalItems);
+    console.log(totalItems.value);
+    items.value = response.items;
+})
 const props = defineProps({
     id: {
         type: String,
         required: true
     }
 });
-onMounted(async () => {
-    const response = await itemsService.getItemsByZoneId(props.id,1,10);
-    totalItems.value = parseInt(response.totalItems);
-    items.value = response.items;
-})
+
+const confirmDelete = (id) => {
+    itemToDeleteId.value = id
+    showDeleteDialog.value = true
+}
+const deleteConfirmed = async () => {
+    await itemsService.deleteItem(itemToDeleteId.value)
+    if(totalItems.value - 1 <= rows.value && page.value > 1) {
+        page.value = page.value - 1
+    }
+    const updatedItems = await itemsService.getItemsByZoneId(props.id, page.value, rows.value)
+    items.value = updatedItems.items
+    totalItems.value = parseInt(updatedItems.totalItems)
+    showDeleteDialog.value = false
+    itemToDeleteId.value = null
+}
+
+
 
 const edit = (item) => {
     console.log('Edit item', item);
@@ -43,16 +64,23 @@ const saveNewItem = async () => {
             Location: newItem.value.Location,
             ZoneId: parseInt(props.id)
     };
-    const response = await itemsService.createItem(payload);
+    await itemsService.createItem(payload);
     showAddDialog.value = false;
     newItem.value = { Name: '', Quantity: '', Unit: '', ExpirationDate: '', Location: '',ZoneId: 0 };
     const updatedItems = await itemsService.getItemsByZoneId(props.id);
+    totalItems.value = parseInt(updatedItems.totalItems);
     items.value = updatedItems.items;
 }
 const onPageChange = async (event) => {
     page.value = event.page + 1;
     const response = await itemsService.getItemsByZoneId(props.id,page.value,event.rows);
     items.value = response.items;
+}
+const deleteItem = async (id) => {
+    await itemsService.deleteItem(id);
+    const updatedItems = await itemsService.getItemsByZoneId(props.id,page.value,rows.value);
+    items.value = updatedItems.items;
+    totalItems.value = parseInt(updatedItems.totalItems);
 }
 </script>
 
@@ -76,11 +104,11 @@ const onPageChange = async (event) => {
               <Column header="Actions">
                   <template #body="slotProps">
                       <Button icon="pi pi-pencil" @click="edit(slotProps.data)" class="p-button-rounded p-button-success p-mr-2" />
-                      <Button icon="pi pi-trash" class="ml-2 p-button-rounded p-button-danger" />
+                      <Button icon="pi pi-trash" @click="confirmDelete(slotProps.data.id)" class="ml-2 p-button-rounded p-button-danger" />
                   </template>
               </Column>
           </DataTable>
-          <Paginator v-if="totalItems > rows" :rows="rows" :v-model:page="page" :totalRecords="totalItems" @page="onPageChange" :rows-per-page-options="[5,10,20,50]"></Paginator>
+          <Paginator :rows="rows" :v-model:page="page" :totalRecords="totalItems" @page="onPageChange" :rows-per-page-options="[5,10,20,50]"></Paginator>
 
       </template>
       <template #footer>
@@ -145,6 +173,19 @@ const onPageChange = async (event) => {
                 />
             </div>
         </form>
+    </Dialog>
+    <Dialog
+        v-model:visible="showDeleteDialog"
+        header="Confirmer la suppression"
+        :modal="true"
+        :closable="false"
+        class="p-dialog-sm"
+    >
+        <div>Voulez-vous vraiment supprimer cet article ?</div>
+        <div class="flex justify-between mt-4">
+            <Button label="Annuler" icon="pi pi-times" @click="showDeleteDialog = false" class="p-button-text" />
+            <Button label="Supprimer" icon="pi pi-trash" @click="deleteConfirmed" class="p-button-danger" />
+        </div>
     </Dialog>
 
 </template>

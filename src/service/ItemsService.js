@@ -32,7 +32,7 @@ const itemsService = {
     deleteItem: async (itemId) => {
         try {
             const response = await apiClient.delete(`/items/${itemId}`);
-            return response.data; // success message or deleted item info
+            return response.data;
         } catch (error) {
             throw error;
         }}
